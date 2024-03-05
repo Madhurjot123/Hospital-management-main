@@ -25,11 +25,12 @@
             <input type="hidden" name="doctor_email" value="{{ doctor.email }}">
             <div class="mb-3">
               <label for="appointment_date" class="form-label">Appointment Date:</label>
-              <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+              <input type="date" class="form-control" id="appointment_date" name="appointment_date" min="{{ current_date }}" required>
+
             </div>
             <div class="mb-3">
               <label for="appointment_time" class="form-label">Appointment Time:</label>
-              <input type="time" class="form-control" id="appointment_time" name="appointment_time" required>
+              <input type="time" class="form-control" id="appointment_time" name="appointment_time" step="3600" required>
             </div>
             <button type="submit" class="btn btn-primary">Book</button>
           </form>

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, redirect
 from mongoproject3 import MongoDBHelper  # Assuming you have a separate module for MongoDB operations
 import datetime
 import hashlib
+from datetime import datetime
 
 web_app = Flask('Hospital')
 web_app.secret_key = 'your_secret_key'  # Moved secret key initialization here
@@ -117,10 +118,12 @@ def doctors():
     if specialization:
         db = MongoDBHelper(collection="doctor-hospital")
         doctors = db.fetch({'specialization': specialization})
-        return render_template("doctor.html", doctors=doctors)
+        current_date = datetime.now().strftime("%Y-%m-%d")  # Get current date in the format YYYY-MM-DD
+        return render_template("doctor.html", doctors=doctors, current_date=current_date)
     else:
         # Handle case when no specialization is provided
         return "No specialization provided"
+
 
 
 @web_app.route("/book", methods=['POST'])
@@ -130,7 +133,11 @@ def book_appointment():
         appointment_date = request.form['appointment_date']
         appointment_time = request.form['appointment_time']
 
-        appointment_datetime = f"{appointment_date} {appointment_time}"
+        appointment_datetime = datetime.strptime(f"{appointment_date} {appointment_time}", "%Y-%m-%d %H:%M").strftime(
+            "%Y-%m-%d %I:%M %p")
+
+        if datetime.strptime(appointment_datetime, "%Y-%m-%d %I:%M %p") < datetime.now():
+            return "Please select a future date and time for the appointment."
 
         appointment_data = {
             'doctor_email': doctor_email,
