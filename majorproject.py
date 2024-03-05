@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect
-from mongoproject3 import MongoDBHelper
+from mongoproject3 import MongoDBHelper  # Assuming you have a separate module for MongoDB operations
 import datetime
 import hashlib
 
@@ -16,15 +16,14 @@ def login():
 def register():
     return render_template("register.html")
 
-
 @web_app.route("/register-patient", methods=['POST'])
 def register_patient():
     email = request.form['email']
 
     db = MongoDBHelper(collection="Hospital")
-    existing_station = db.fetch_one({'email': email})
+    existing_patient = db.fetch_one({'email': email})
 
-    if existing_station:
+    if existing_patient:
         return render_template('error.html', message=f'{email} already registered')
 
     patient_data = {
@@ -36,7 +35,6 @@ def register_patient():
         'password': hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest(),
         'createdOn': datetime.datetime.today()
     }
-    print(patient_data)
 
     db.insert(patient_data)
 
@@ -54,7 +52,6 @@ def login_patient():
         'email': request.form['email'],
         'password': hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest(),
     }
-    print(login_data)
 
     db = MongoDBHelper(collection="Hospital")
     documents = list(db.fetch(login_data))
@@ -63,7 +60,6 @@ def login_patient():
         session['email'] = documents[0]['email']
         session['patient_id'] = str(documents[0]['_id'])
         session['first_name'] = documents[0]['first_name']
-        print(vars(session))
         return render_template('patientDashboard.html')
     else:
         return render_template('error.html', message="Incorrect Email And Password ")
@@ -106,16 +102,47 @@ def login_doctor():
         'email': request.form['email'],
         'password': hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest(),
     }
-    print(login_doctor_data)
 
     db = MongoDBHelper(collection="doctor-hospital")
     documents = list(db.fetch(login_doctor_data))
     if len(documents) == 1:
         session['email'] = documents[0]['email']
-        print(session)
         return "doctor login successful"
     else:
         return render_template('error.html', message="Incorrect Email And Password ")
+
+@web_app.route("/doctors")
+def doctors():
+    specialization = request.args.get('specialization')
+    if specialization:
+        db = MongoDBHelper(collection="doctor-hospital")
+        doctors = db.fetch({'specialization': specialization})
+        return render_template("doctor.html", doctors=doctors)
+    else:
+        # Handle case when no specialization is provided
+        return "No specialization provided"
+
+
+@web_app.route("/book", methods=['POST'])
+def book_appointment():
+    if request.method == 'POST':
+        doctor_email = request.form['doctor_email']
+        appointment_date = request.form['appointment_date']
+        appointment_time = request.form['appointment_time']
+
+        appointment_datetime = f"{appointment_date} {appointment_time}"
+
+        appointment_data = {
+            'doctor_email': doctor_email,
+            'appointment_datetime': appointment_datetime,
+        }
+
+        db = MongoDBHelper(collection="doctor-appointment")
+        db.insert(appointment_data)
+
+        return "Appointment booked successfully!"
+    else:
+        return "Invalid request method"
 
 
 if __name__ == "__main__":
