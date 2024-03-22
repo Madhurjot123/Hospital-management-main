@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, session, redirect
-from mongoproject3 import MongoDBHelper  # Assuming you have a separate module for MongoDB operations
+from flask import Flask, render_template, request, session
+from mongoproject3 import MongoDBHelper
 import datetime
 import hashlib
 from datetime import datetime
 
 web_app = Flask('Hospital')
-web_app.secret_key = 'your_secret_key'  # Moved secret key initialization here
+web_app.secret_key = 'your_secret_key'
 
 
 @web_app.route("/")
@@ -16,6 +16,7 @@ def login():
 @web_app.route("/register")
 def register():
     return render_template("register.html")
+
 
 @web_app.route("/register-patient", methods=['POST'])
 def register_patient():
@@ -88,7 +89,7 @@ def register_doctor():
         'gender': request.form['gender'],
         'specialization': request.form['specialization'],
         'fee': request.form['fee'],
-        'password': hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest()
+        'password': request.form['password'],
     }
 
     db = MongoDBHelper(collection="doctor-hospital")
@@ -101,7 +102,7 @@ def register_doctor():
 def login_doctor():
     login_doctor_data = {
         'email': request.form['email'],
-        'password': hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest(),
+        'password': request.form['password'],
     }
 
     db = MongoDBHelper(collection="doctor-hospital")
@@ -112,18 +113,17 @@ def login_doctor():
     else:
         return render_template('error.html', message="Incorrect Email And Password ")
 
+
 @web_app.route("/doctors")
 def doctors():
     specialization = request.args.get('specialization')
     if specialization:
         db = MongoDBHelper(collection="doctor-hospital")
         doctors = db.fetch({'specialization': specialization})
-        current_date = datetime.now().strftime("%Y-%m-%d")  # Get current date in the format YYYY-MM-DD
+        current_date = datetime.now().strftime("%Y-%m-%d")
         return render_template("doctor.html", doctors=doctors, current_date=current_date)
     else:
-        # Handle case when no specialization is provided
         return "No specialization provided"
-
 
 
 @web_app.route("/book", methods=['POST'])
@@ -133,15 +133,20 @@ def book_appointment():
         appointment_date = request.form['appointment_date']
         appointment_time = request.form['appointment_time']
 
-        appointment_datetime = datetime.strptime(f"{appointment_date} {appointment_time}", "%Y-%m-%d %H:%M").strftime(
-            "%Y-%m-%d %I:%M %p")
+        patient_name = session.get('first_name')
+        patient_email = session.get('email')
 
-        if datetime.strptime(appointment_datetime, "%Y-%m-%d %I:%M %p") < datetime.now():
+        appointment_datetime = datetime.strptime(f"{appointment_date} {appointment_time}", "%Y-%m-%d %I:%M %p")
+
+        if appointment_datetime < datetime.now():
             return "Please select a future date and time for the appointment."
 
         appointment_data = {
             'doctor_email': doctor_email,
-            'appointment_datetime': appointment_datetime,
+            'appointment_date': appointment_date,
+            'appointment_time': appointment_time,
+            'patient_name': patient_name,
+            'patient_email': patient_email
         }
 
         db = MongoDBHelper(collection="doctor-appointment")
@@ -152,5 +157,19 @@ def book_appointment():
         return "Invalid request method"
 
 
+@web_app.route("/admin-patient-list")
+def admin_patient_list():
+    db = MongoDBHelper(collection="Hospital")
+    patients = db.fetch_all()
+    return render_template('admin-patient-list.html', patients=patients)
+
+
+@web_app.route("/admin-doctor-list")
+def admin_doctor_list():
+    db = MongoDBHelper(collection="doctor-hospital")
+    doctors = db.fetch_all()
+    return render_template('admin-doctor-list.html', doctors=doctors)
+
+
 if __name__ == "__main__":
-    web_app.run(port=5000)
+    web_app.run(port=1000)
