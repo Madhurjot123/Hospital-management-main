@@ -29,9 +29,13 @@ class MongoDBHelper:
         print("Updated Document:", result.modified_count)
 
     def fetch_one(self, query):
-       document = self.collection.find_one(query)
-       return document
+        document = self.collection.find_one(query)
+        return document
 
     def fetch_all(self):
         documents = self.collection.find()
         return list(documents)
+
+    def find_one(self, query):
+        document = self.collection.find_one(query)
+        return document

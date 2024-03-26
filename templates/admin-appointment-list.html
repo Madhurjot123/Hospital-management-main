@@ -39,25 +39,27 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Gender</th>
-                            <th>Specialization</th>
-                            <th>Consultancy Fee</th>
-                            <th>Password</th>
+                            <th>Doctor Name</th>
+                            <th>Doctor Email</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                            <th>Patient name</th>
+                            <th>Patient email</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for doctor in doctors %}
-                        <tr>
-                            <td>{{ doctor.doctor_name }}</td>
-                            <td>{{ doctor.email }}</td>
-                            <td>{{ doctor.gender }}</td>
-                            <td>{{ doctor.specialization }}</td>
-                            <td>{{ doctor.fee }}</td>
-                            <td>{{ doctor.password }}</td>
-                        </tr>
-                        {% endfor %}
+<tbody>
+    {% for appointment in appointments %}
+    <tr>
+        <td>{{ appointment.doctor_name }}</td>
+        <td>{{ appointment.doctor_email }}</td>
+        <td>{{ appointment.appointment_date }}</td>
+        <td>{{ appointment.appointment_time }}</td>
+        <td>{{ appointment.patient_name }}</td>
+        <td>{{ appointment.patient_email }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
                     </tbody>
                 </table>
             </div>

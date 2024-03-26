@@ -1,15 +1,17 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, session
 from mongoproject3 import MongoDBHelper
 import datetime
 import hashlib
 from datetime import datetime
+from flask import request
+
 
 web_app = Flask('Hospital')
 web_app.secret_key = 'your_secret_key'
 
 
 @web_app.route("/")
-def login():
+def login_all():
     return render_template("index.html")
 
 
@@ -35,7 +37,7 @@ def register_patient():
         'email': request.form['email'],
         'gender': request.form['gender'],
         'password': hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest(),
-        'createdOn': datetime.datetime.today()
+        'createdOn': datetime.now()
     }
 
     db.insert(patient_data)
@@ -48,70 +50,55 @@ def register_patient():
     return render_template('patientDashboard.html')
 
 
-@web_app.route("/login-patient", methods=['POST'])
-def login_patient():
-    login_data = {
-        'email': request.form['email'],
-        'password': hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest(),
-    }
+@web_app.route("/login", methods=['POST'])
+def login():
+    email = request.form['email']
+    password_hash = hashlib.sha256(request.form['password'].encode('utf-8')).hexdigest()
+    password = request.form['password']
 
-    db = MongoDBHelper(collection="Hospital")
-    documents = list(db.fetch(login_data))
-    if len(documents) == 1:
-        session['id'] = str(documents[0]['_id'])
-        session['email'] = documents[0]['email']
-        session['patient_id'] = str(documents[0]['_id'])
-        session['first_name'] = documents[0]['first_name']
+    # Check Hospital cluster for patient login
+    hospital_db = MongoDBHelper(collection="Hospital")
+    hospital_documents = list(hospital_db.fetch({'email': email, 'password': password_hash}))
+    if len(hospital_documents) == 1:
+        session['id'] = str(hospital_documents[0]['_id'])
+        session['email'] = hospital_documents[0]['email']
+        session['patient_id'] = str(hospital_documents[0]['_id'])
+        session['first_name'] = hospital_documents[0]['first_name']
+        print(session)  # Print the session
         return render_template('patientDashboard.html')
-    else:
-        return render_template('error.html', message="Incorrect Email And Password ")
 
+    # Check doctor-hospital cluster for doctor login
+    doctor_db = MongoDBHelper(collection="doctor-hospital")
+    doctor_documents = list(doctor_db.fetch({'email': email, 'password': password}))
+    if len(doctor_documents) == 1:
+        print(session)  # Print the session
+        return render_template('doctor-home.html')
 
-@web_app.route("/admin-login", methods=['POST'])
-def admin_login():
-    entered_email = request.form.get('email')
-    entered_password = request.form.get('password')
-
+    # Check admin login
     admin_email = "admin@example.com"
     admin_password = "admin123"
-
-    if entered_email == admin_email and entered_password == admin_password:
+    if email == admin_email and password == admin_password:
         return render_template('admin-home.html')
-    else:
-        return render_template('error.html', message="Incorrect Email or Password ")
+
+    # If not found in any cluster, return error
+    return render_template('error.html', message="Incorrect Email or Password ")
 
 
 @web_app.route("/register-doctor", methods=['POST'])
 def register_doctor():
     doctor_data = {
-        'name': request.form['name'],
+        'doctor_name': request.form['doctor_name'],
         'email': request.form['email'],
         'gender': request.form['gender'],
         'specialization': request.form['specialization'],
         'fee': request.form['fee'],
-        'password': request.form['password'],
+        'password': request.form['password']
     }
 
     db = MongoDBHelper(collection="doctor-hospital")
     db.insert(doctor_data)
 
     return "Doctor registered successfully!"
-
-
-@web_app.route("/login-doctor", methods=['POST'])
-def login_doctor():
-    login_doctor_data = {
-        'email': request.form['email'],
-        'password': request.form['password'],
-    }
-
-    db = MongoDBHelper(collection="doctor-hospital")
-    documents = list(db.fetch(login_doctor_data))
-    if len(documents) == 1:
-        session['email'] = documents[0]['email']
-        return "doctor login successful"
-    else:
-        return render_template('error.html', message="Incorrect Email And Password ")
 
 
 @web_app.route("/doctors")
@@ -129,6 +116,7 @@ def doctors():
 @web_app.route("/book", methods=['POST'])
 def book_appointment():
     if request.method == 'POST':
+        doctor_name = request.form['doctor_name']
         doctor_email = request.form['doctor_email']
         appointment_date = request.form['appointment_date']
         appointment_time = request.form['appointment_time']
@@ -142,6 +130,7 @@ def book_appointment():
             return "Please select a future date and time for the appointment."
 
         appointment_data = {
+            'doctor_name': doctor_name,  # Correctly extract doctor_name from form data
             'doctor_email': doctor_email,
             'appointment_date': appointment_date,
             'appointment_time': appointment_time,
@@ -151,10 +140,11 @@ def book_appointment():
 
         db = MongoDBHelper(collection="doctor-appointment")
         db.insert(appointment_data)
-
+        print(request.form)  # Print form data for debugging
         return "Appointment booked successfully!"
     else:
         return "Invalid request method"
+
 
 
 @web_app.route("/admin-patient-list")
@@ -169,6 +159,23 @@ def admin_doctor_list():
     db = MongoDBHelper(collection="doctor-hospital")
     doctors = db.fetch_all()
     return render_template('admin-doctor-list.html', doctors=doctors)
+
+
+@web_app.route("/admin-appointment-list")
+def admin_appointment_list():
+    db = MongoDBHelper(collection="doctor-appointment")
+    appointments = db.fetch_all()
+    print(appointments)
+    return render_template('admin-appointment-list.html', appointments=appointments)
+
+
+@web_app.route("/patient-appointment-list")
+def patient_appointment_list():
+    patient_email = session.get('email')
+    db = MongoDBHelper(collection="doctor-appointment")
+    appointments = db.fetch({'patient_email': patient_email})
+    print(appointments)
+    return render_template('patient-appointment-list.html', appointments=appointments)
 
 
 if __name__ == "__main__":

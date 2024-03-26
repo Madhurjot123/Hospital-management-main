@@ -15,7 +15,7 @@
       <div class="col-md-4 mb-4">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">{{ doctor.name }}</h5>
+            <h5 class="card-title">{{ doctor.doctor_name }}</h5>
             <p class="card-text">Email: {{ doctor.email }}</p>
             <p class="card-text">Gender: {{ doctor.gender }}</p>
             <p class="card-text">Specialization: {{ doctor.specialization }}</p>
@@ -23,6 +23,7 @@
             <!-- Add a form to input appointment date and time -->
             <form action="/book" method="POST">
               <input type="hidden" name="doctor_email" value="{{ doctor.email }}">
+              <input type="hidden" name="doctor_name" value="{{ doctor.doctor_name }}">
               <div class="mb-3">
                 <label for="appointment_date" class="form-label">Appointment Date:</label>
                 <input type="date" class="form-control" id="appointment_date" name="appointment_date" min="{{ current_date }}" required>

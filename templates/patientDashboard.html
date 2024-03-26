@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <title>Auto Service Track</title>
+  <title>Hospital management</title>
 
   <style>
     body {
@@ -28,19 +28,26 @@
     <p class="off-white-text">Welcome To Hospital management</p>
   </div>
 
-  <!-- Add two big buttons below the jumbotron with btn-primary class for blue color -->
+  <!-- Add buttons for specialties and Patient Appointment List -->
   <div class="text-center mt-3">
-    <h2>Login As:</h2>
+    <h2>Continue As:</h2>
     <button id="CardiologistButton" class="btn btn-primary btn-lg" onclick="redirectToDoctors('Cardiologist')">Cardiologist</button>
-<button id="DermatologistButton" class="btn btn-primary btn-lg" onclick="redirectToDoctors('Dermatologist')">Dermatologist</button>
-<button id="PediatricianButton" class="btn btn-primary btn-lg" onclick="redirectToDoctors('Pediatrician')">Pediatrician</button>
+    <button id="DermatologistButton" class="btn btn-primary btn-lg" onclick="redirectToDoctors('Dermatologist')">Dermatologist</button>
+    <button id="PediatricianButton" class="btn btn-primary btn-lg" onclick="redirectToDoctors('Pediatrician')">Pediatrician</button>
+    <button id="PatientAppointmentListButton" class="btn btn-primary btn-lg" onclick="redirectToPage('/patient-appointment-list')">Patient Appointment List</button>
+  </div>
 
-<script>
-  // Function to redirect to doctors page with specialization
-  function redirectToDoctors(specialization) {
-    window.location.href = "/doctors?specialization=" + specialization;
-  }
-</script>
+  <script>
+    // Function to redirect to doctors page with specialization
+    function redirectToDoctors(specialization) {
+      window.location.href = "/doctors?specialization=" + specialization;
+    }
+
+    // Function to redirect to Patient Appointment List
+    function redirectToPage(page) {
+      window.location.href = page;
+    }
+  </script>
 
 </body>
 </html>
