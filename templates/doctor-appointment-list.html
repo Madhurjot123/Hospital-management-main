@@ -59,11 +59,10 @@
                             <td>{{ appointment.patient_name }}</td>
                             <td>{{ appointment.patient_email }}</td>
                             <td>{{ appointment.status }}</td>
-
                             <td>
     {% if appointment.status != 'cancel by patient' and appointment.status != 'cancel by doctor' %}
         <!-- Form for cancel button -->
-        <form method="POST" action="/cancel-appointment">
+        <form method="POST" action="/cancel-doctor-appointment">
             <input type="hidden" name="appointment_id" value="{{ appointment.appointment_id }}">
             <button type="submit" class="btn btn-danger">Cancel</button>
         </form>

@@ -39,3 +39,16 @@ class MongoDBHelper:
     def find_one(self, query):
         document = self.collection.find_one(query)
         return document
+
+    def update_one(self, query, update_data):
+        result = self.collection.update_one(query, update_data)
+        print("Updated Document:", result.modified_count)
+
+    def update_appointment_status(self, appointment_id, status):
+        query = {'appointment_id': appointment_id}
+        update_data = {'$set': {'status': status}}
+        self.update_one(query, update_data)
+
+    def update_appointment_cancel_by_patient(self, appointment_id):
+        self.update_appointment_status(appointment_id, 'cancel by patient')
+
