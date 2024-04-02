@@ -50,7 +50,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for appointment in appointments %}
+                        {% for appointment in appointments[::-1] %}
                         <tr>
                             <td>{{ appointment.doctor_name }}</td>
                             <td>{{ appointment.doctor_email }}</td>

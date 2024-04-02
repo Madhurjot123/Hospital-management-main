@@ -52,3 +52,7 @@ class MongoDBHelper:
     def update_appointment_cancel_by_patient(self, appointment_id):
         self.update_appointment_status(appointment_id, 'cancel by patient')
 
+    def update_prescription(self, appointment_id, prescription_data):
+        query = {'appointment_id': appointment_id}
+        update_data = {'$set': {'prescription': prescription_data}}
+        self.update_one(query, update_data)

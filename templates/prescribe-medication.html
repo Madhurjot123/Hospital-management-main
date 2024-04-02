@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Prescribe Medication</title>
+    <!-- Include necessary CSS and JS libraries -->
+</head>
+
+<body>
+    <h1>Prescribe Medication</h1>
+    <form method="POST" action="/prescribe-medication">
+        <input type="hidden" name="appointment_id" value="{{ appointment_id }}">
+        <label for="allergies">Allergies:</label>
+        <input type="text" id="allergies" name="allergies"><br>
+        <label for="medication">Medication:</label>
+        <input type="text" id="medication" name="medication"><br>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</body>
+
+</html>

@@ -46,7 +46,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for patient in patients %}
+            {% for patient in patients[::-1] %}
             <tr>
                 <td>{{ patient.first_name }}</td>
                 <td>{{ patient.last_name }}</td>

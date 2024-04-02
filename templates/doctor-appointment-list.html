@@ -47,10 +47,11 @@
                             <th>Patient email</th>
                             <th>Status</th>
                             <th>Action</th> <!-- Added Action column -->
+                            <th>Prescribe</th> <!-- Added Prescribe column -->
                         </tr>
                     </thead>
                     <tbody>
-                        {% for appointment in appointments %}
+                        {% for appointment in appointments[::-1] %}
                         <tr>
                             <td>{{ appointment.doctor_name }}</td>
                             <td>{{ appointment.doctor_email }}</td>
@@ -60,14 +61,22 @@
                             <td>{{ appointment.patient_email }}</td>
                             <td>{{ appointment.status }}</td>
                             <td>
-    {% if appointment.status != 'cancel by patient' and appointment.status != 'cancel by doctor' %}
-        <!-- Form for cancel button -->
-        <form method="POST" action="/cancel-doctor-appointment">
-            <input type="hidden" name="appointment_id" value="{{ appointment.appointment_id }}">
-            <button type="submit" class="btn btn-danger">Cancel</button>
-        </form>
-    {% endif %}
-</td>
+                                {% if appointment.status != 'cancel by patient' and appointment.status != 'cancel by doctor' %}
+                                    <!-- Form for cancel button -->
+                                    <form method="POST" action="/cancel-doctor-appointment">
+                                        <input type="hidden" name="appointment_id" value="{{ appointment.appointment_id }}">
+                                        <button type="submit" class="btn btn-danger">Cancel</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!-- Form for prescribe button -->
+                                <form method="POST" action="/render-prescribe-medication">
+                                    <input type="hidden" name="appointment_id" value="{{ appointment.appointment_id }}">
+                                    <button type="submit" class="btn btn-success">Prescribe</button>
+                                </form>
+
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

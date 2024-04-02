@@ -1,11 +1,10 @@
-from flask import Flask, render_template, session, redirect
+from flask import Flask, render_template, session, redirect, url_for
 from mongoproject3 import MongoDBHelper
 import datetime
 import hashlib
 from datetime import datetime
 from flask import request
 from bson import ObjectId
-
 
 
 web_app = Flask('Hospital')
@@ -20,6 +19,11 @@ def login_all():
 @web_app.route("/register")
 def register():
     return render_template("register.html")
+
+
+@web_app.route("/book-appointment")
+def book_appointment001():
+    return render_template("patientDashboard.html")
 
 
 @web_app.route("/register-patient", methods=['POST'])
@@ -49,7 +53,7 @@ def register_patient():
     session['patient_email'] = patient_data['email']
     session['patient_contact'] = patient_data['contact']
 
-    return render_template('patientDashboard.html')
+    return render_template('patient-home.html')
 
 
 @web_app.route("/login", methods=['POST'])
@@ -66,7 +70,7 @@ def login():
         session['patient_id'] = str(hospital_documents[0]['_id'])
         session['first_name'] = hospital_documents[0]['first_name']
         print(session)
-        return render_template('patientDashboard.html')
+        return render_template('patient-home.html')
 
     doctor_db = MongoDBHelper(collection="doctor-hospital")
     doctor_documents = list(doctor_db.fetch({'email': email, 'password': password}))
@@ -128,7 +132,7 @@ def book_appointment():
         if appointment_datetime < datetime.now():
             return "Please select a future date and time for the appointment."
 
-        appointment_id = str(ObjectId())  # Generate a unique appointment ID
+        appointment_id = str(ObjectId())
 
         appointment_data = {
             'appointment_id': appointment_id,
@@ -194,9 +198,9 @@ def cancel_appointment():
 
 @web_app.route("/doctor-appointment-list")
 def doctor_appointment_list():
-    doctor_email = session.get('doctor_email')  # Assuming doctor's email is stored in the session
+    doctor_email = session.get('doctor_email')
     db = MongoDBHelper(collection="doctor-appointment")
-    appointments = db.fetch({'doctor_email': doctor_email})  # Fetch appointments by doctor's email
+    appointments = db.fetch({'doctor_email': doctor_email})
     print(appointments)
     return render_template('doctor-appointment-list.html', appointments=appointments)
 
@@ -209,15 +213,44 @@ def cancel_doctor_appointment():
         db = MongoDBHelper(collection="doctor-appointment")
         appointment = db.find_one({'appointment_id': appointment_id})
         if appointment:
-            # Update the status to "cancel by doctor"
             db.update_one({'appointment_id': appointment_id}, {'$set': {'status': 'cancel by doctor'}})
             print("Appointment canceled by doctor.")
-            return redirect('/doctor-appointment-list')  # Redirect to appointment list page
+            return redirect('/doctor-appointment-list')
         else:
             return render_template('error.html', message="Appointment not found.")
     else:
         return "Invalid request method"
 
+
+@web_app.route("/prescribe-medication/<id>")
+def Prescribe_medication(id):
+    db = MongoDBHelper(collection="doctor-appointment")
+    query = {'_id': ObjectId(id)}
+    customer = db.fetch(query)[0]
+    return render_template("update-customer1.html", customer=customer)
+
+
+@web_app.route("/prescribe-medication/<id>", methods=['GET', 'POST'])
+def prescribe_medication(id):
+    if request.method == 'POST':
+        appointment_id = id
+        allergies = request.form.get('allergies')
+        medication = request.form.get('medication')
+
+        db = MongoDBHelper(collection="doctor-appointment")
+        query = {'_id': ObjectId(appointment_id)}
+        appointment = db.fetch_one(query)
+
+        if appointment:
+            appointment['allergies'] = allergies
+            appointment['medication'] = medication
+            db.update(appointment, query)
+
+            return redirect(url_for('doctor_appointment_list'))
+        else:
+            return render_template('error.html', message='Appointment not found.')
+
+    return render_template("prescribe-medication.html", appointment_id=id)
 
 
 if __name__ == "__main__":
