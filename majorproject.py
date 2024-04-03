@@ -75,7 +75,7 @@ def login():
     doctor_db = MongoDBHelper(collection="doctor-hospital")
     doctor_documents = list(doctor_db.fetch({'email': email, 'password': password}))
     if len(doctor_documents) == 1:
-        session['doctor_email'] = doctor_documents[0]['email']  # Store doctor's email in session
+        session['doctor_email'] = doctor_documents[0]['email']
         print(session)
         return render_template('doctor-home.html')
 
@@ -141,7 +141,11 @@ def book_appointment():
             'appointment_date': appointment_date,
             'appointment_time': appointment_time,
             'patient_name': patient_name,
-            'patient_email': patient_email
+            'patient_email': patient_email,
+            'diseases': 'not prescribed',
+            'allergies': 'not prescribed',
+            'medicine': 'not prescribed',
+            'status': 'active'
         }
 
         db = MongoDBHelper(collection="doctor-appointment")
@@ -150,6 +154,8 @@ def book_appointment():
         return "Appointment booked successfully!"
     else:
         return "Invalid request method"
+
+
 
 
 @web_app.route("/admin-patient-list")
@@ -222,35 +228,92 @@ def cancel_doctor_appointment():
         return "Invalid request method"
 
 
-@web_app.route("/prescribe-medication/<id>")
-def Prescribe_medication(id):
+@web_app.route("/prescribe-medication/<appointment_id>")
+def prescribe_medication(appointment_id):
     db = MongoDBHelper(collection="doctor-appointment")
-    query = {'_id': ObjectId(id)}
-    customer = db.fetch(query)[0]
-    return render_template("update-customer1.html", customer=customer)
+    query = {'appointment_id': appointment_id}
+    appointment = db.find_one(query)
+
+    db.update({'status': 'prescription done'}, query)
+
+    if not appointment:
+        return render_template('error.html', message="Appointment not found.")
+
+    return render_template("prescribe-medication.html", appointment=appointment)
 
 
-@web_app.route("/prescribe-medication/<id>", methods=['GET', 'POST'])
-def prescribe_medication(id):
-    if request.method == 'POST':
-        appointment_id = id
-        allergies = request.form.get('allergies')
-        medication = request.form.get('medication')
+@web_app.route("/prescribe-medication-patient", methods=['POST'])
+def prescribe_medication_for_patient():
+    patient_data_to_update = {
+        'allergies': request.form['allergies'],
+        'diseases': request.form['diseases'],
+        'medicine': request.form['medicine'],
+    }
+    appointment_id = request.form['appointment_id']
 
-        db = MongoDBHelper(collection="doctor-appointment")
-        query = {'_id': ObjectId(appointment_id)}
-        appointment = db.fetch_one(query)
+    db = MongoDBHelper(collection="doctor-appointment")
+    query = {'appointment_id': appointment_id}
 
-        if appointment:
-            appointment['allergies'] = allergies
-            appointment['medication'] = medication
-            db.update(appointment, query)
+    db.update(patient_data_to_update, query)
 
-            return redirect(url_for('doctor_appointment_list'))
-        else:
-            return render_template('error.html', message='Appointment not found.')
+    return "Medicine prescribed"
 
-    return render_template("prescribe-medication.html", appointment_id=id)
+
+@web_app.route("/patient-prescription-list")
+def patient_prescription_list():
+    patient_email = session.get('email')
+    db = MongoDBHelper(collection="doctor-appointment")
+    appointments = db.fetch({'patient_email': patient_email})
+    print(appointments)
+    return render_template('patient-prescription-list.html', appointments=appointments)
+
+
+@web_app.route("/logout")
+def logout():
+    session['_id'] = ""
+    session['email'] = ""
+    return redirect("/")
+
+
+@web_app.route("/logout-doctor")
+def logout_doctor():
+    session['email'] = ""
+    return redirect("/")
+
+
+@web_app.route("/doctor-prescription-list")
+def doctor_prescription_list():
+    doctor_email = session.get('doctor_email')
+    db = MongoDBHelper(collection="doctor-appointment")
+    appointments = db.fetch({'doctor_email': doctor_email})
+    print(appointments)
+    return render_template('doctor-prescription-list.html', appointments=appointments)
+
+
+@web_app.route("/admin-prescription-list")
+def admin_prescription_list():
+    db = MongoDBHelper(collection="doctor-appointment")
+    appointments = db.fetch_all()
+    print(appointments)
+    return render_template('admin-prescription-list.html', appointments=appointments)
+
+
+@web_app.route("/search-delete-doctor")
+def search_delete_doctor():
+    return render_template("search-delete-doctor.html")
+
+
+@web_app.route("/delete-doctor", methods=['POST'])
+def delete_doctor():
+    email = request.form['email']  # Corrected from 'doctor_email'
+
+    db = MongoDBHelper(collection="doctor-hospital")
+    db.delete({'email': email})
+
+    return "Doctor deleted successfully."
+
+
+
 
 
 if __name__ == "__main__":

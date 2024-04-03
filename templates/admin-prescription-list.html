@@ -4,8 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Patient/MyAppointment</title>
-
+    <title>Patient/Book Appointment</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -13,26 +12,32 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css" rel="stylesheet" />
-
 </head>
-
 <style>
-    nav {
-        background-color: rgb(117, 213, 202);
+    body {
+        background-color: black;
     }
 
-    body {
-        background-image: url(v870-tang-36.jpg);
-        background-position: cover;
-        background-size: cover;
+    .text-center {
+        text-align: center;
+    }
+
+    table {
+        margin: 0 auto;
+        width: 90%; /* Adjust as needed */
+    }
+
+    table th,
+    table td {
+        text-align: center;
     }
 </style>
 
 <body>
-    <nav class="navbar navbar-expand-md bsb-navbar bsb-navbar-hover bsb-navbar-caret">
-        <div class="container-fluid">
-            <a class="navbar-brand justify-content-center mt-2" href="#">
-                <h5><i class="fa-regular fa-hospital"></i> QuickHealth</h5>
+    <nav class="navbar navbar-expand-md bg-light bsb-navbar bsb-navbar-hover bsb-navbar-caret">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <h2 style="color: black">Care <i style="color:black ;" class="fa-solid fa-plus"></i></h2>
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
@@ -86,41 +91,32 @@
     </nav>
 
     <div class="container mt-3">
-        <h1 class="text-center text-dark  mt-5">Your Appointments</h1>
-        <div class="py-5">
+        <h1 class="text-center text-white">Your Prescription</h1>
+        <div class="mb-3 mt-3">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Doctor Name</th>
-                        <th>Doctor Email</th>
+                        <th>Patient Name</th>
+                        <th>Patient Email </th>
                         <th>Appointment Date</th>
                         <th>Appointment Time</th>
-                        <th>Patient name</th>
-                        <th>Patient email</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                        <th>Allergies</th>
+                        <th>Diseases</th>
+                        <th>Medication</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for appointment in appointments[::-1] %}
                     <tr>
                         <td>{{ appointment.doctor_name }}</td>
-                        <td>{{ appointment.doctor_email }}</td>
-                        <td>{{ appointment.appointment_date }}</td>
-                        <td>{{ appointment.appointment_time }}</td>
                         <td>{{ appointment.patient_name }}</td>
                         <td>{{ appointment.patient_email }}</td>
-                        <td>{{ appointment.status }}</td>
-
-                        <td>
-                            {% if appointment.status != 'cancel by patient' and appointment.status != 'cancel by doctor'
-                            %}
-                            <form method="POST" action="/cancel-appointment">
-                                <input type="hidden" name="appointment_id" value="{{ appointment.appointment_id }}">
-                                <button type="submit" class="btn btn-danger">Cancel</button>
-                            </form>
-                            {% endif %}
-                        </td>
+                        <td>{{ appointment.appointment_date }}</td>
+                        <td>{{ appointment.appointment_time }}</td>
+                        <td>{{ appointment.allergies }}</td>
+                        <td>{{ appointment.diseases }}</td>
+                        <td>{{ appointment.medicine }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -128,26 +124,20 @@
         </div>
     </div>
 
-    <footer style="background-color: rgb(117,213,202)" class="text-center text-lg-start text-muted pt-3">
-
+    <footer class="text-center text-lg-start bg-body-tertiary text-muted pt-3 mt-5">
         <div class="container text-center text-md-start">
-
             <div class="row mt-3">
-
                 <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-
-                    <h4 style="color: black;" class="fw-bold mb-4">
-                        <i class="fa-solid fa-hospital"></i></i> QuickHealth
+                    <h4 class="fw-bold mb-4">
+                        <i class="fa-solid fa-hospital"></i></i> Care+
                     </h4>
-                    <p style="color: black;">
-                        "Welcome to QuickHealth, where technology meets compassion in healthcare management. Experience
+                    <p>
+                        "Welcome to Care+, where technology meets compassion in healthcare management. Experience
                         seamless integration, efficiency, and precision in every aspect of patient care and
                         administration. Trust Care+ to elevate your healthcare facility to new heights of excellence."
                     </p>
                 </div>
-
-                <div style="color: black;" class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
                     <h6 class="text-uppercase fw-bold mb-4">
                         Useful links
                     </h6>
@@ -164,11 +154,7 @@
                         <a href="#!" class="text-reset">Log out</a>
                     </p>
                 </div>
-
-
-
-                <div style="color: black;" id="contactus" class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-
+                <div id="contactus" class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
                     <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
                     <form action="#" method="post">
                         <div class="mb-3">
@@ -182,28 +168,20 @@
                             <textarea name="message" class="form-control" placeholder="Your Message" rows="3"
                                 required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-dark mb-4">Send Message</button>
+                        <button type="submit" class="btn btn-primary mb-4">Send Message</button>
                     </form>
                 </div>
             </div>
         </div>
-        <div style="color: black;" class="text-center py-3" style="background-color: rgba(0, 0, 0, 0.05);">
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
             © 2024 Copyright:
-            <a class="text-reset fw-bold" href="https://mdbootstrap.com/">QuickHealth.com</a>
+            <a class="text-reset fw-bold" href="https://mdbootstrap.com/">Care+.com</a>
         </div>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-        crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-    <!-- MDB -->
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
 </body>

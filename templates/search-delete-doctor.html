@@ -1,0 +1,60 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Enter Doctor Email</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <form action="/delete-doctor" method="POST">-->
+<!--        <label for="email">Enter Doctor Email:</label>-->
+<!--        <input type="text" id="email" name="email" required>-->
+<!--        <button type="submit">Delete</button>-->
+<!--    </form>-->
+<!--</body>-->
+
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Delete Doctor</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+<style>
+  .bg-blue {
+    background-color: darkblue; /* Change background color to blue */
+  }
+  .bg-blue-text {
+    color: white; /* Change text color to white */
+  }
+  .off-white-text {
+    color: #f8f9fa; /* Off-white color code */
+  }
+</style>
+
+<div class="container mt-3">
+    <div class="mt-4 p-5 bg-blue bg-blue-text rounded"> <!-- Updated background color classes -->
+      <h1 class="dark-red-text">Quick Health</h1>
+      <p class="off-white-text"></p>
+    </div>
+    <div class="mb-3 mt-3">
+      <h2>Search Service</h2>
+      <form action="/delete-doctor" method="POST">
+        <div class="mb-3 mt-3">
+          <label for="email">Car Number:</label>
+          <input type="text" class="form-control" id="email" placeholder="Enter Email" name="email"">
+        </div>
+        <button type="submit" class="btn btn-primary mt-3" style="background-color: blue;">Delete Doctor</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

@@ -32,6 +32,8 @@
   <div class="text-center mt-3">
     <h2>Continue As:</h2>
     <button id="DoctorAppointmentListButton" class="btn btn-primary btn-lg">Doctor Appointment List</button>
+    <button id="DoctorPrescriptionListButton" class="btn btn-primary btn-lg">Doctor Prescription List</button>
+
   </div>
 
 </body>
@@ -42,6 +44,9 @@
 
   document.getElementById('DoctorAppointmentListButton').addEventListener('click', function() {
     redirectToPage('/doctor-appointment-list');
+  });
+    document.getElementById('DoctorPrescriptionListButton').addEventListener('click', function() {
+    redirectToPage('/doctor-prescription-list');
   });
 </script>
 </html>

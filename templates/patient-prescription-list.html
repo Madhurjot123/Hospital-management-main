@@ -1,11 +1,10 @@
-
 <!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Patient Dashboard</title>
+    <title>Patient/Prescriptions</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -85,94 +84,35 @@
             </div>
         </div>
     </nav>
-
-    <div class="jumbotron mt-5">
-        <div class="container px-5">
-            <div class="text-center d-flex justify-content-center align-items-center">
-                <div class="py-5 px-5">
-                    <h1 style="font-weight: bolder;font-size: 50px;color: black;" class="card-title">Welcome, Patient
-                    </h1>
-                    <p style="font-weight: bold;font-size: 20px;color: black;" class="card-text py-4">"Your health is
-                        our priority. Book an appointment today and take the first
-                        step
-                        towards a healthier tomorrow."</p>
-                    <a href="/book-appointment"> <button style="width: 200px;height: 40px;color: white;background-color: black;" type="button"
-                        class="btn btn-dark btn-rounded" data-mdb-ripple-init>Book
-                        Appointment</button></a>
-                </div>
-                <div>
-                    <img src="27202-removebg-preview.png" alt="">
-                </div>
-            </div>
+    <div class="container mt-3">
+        <h1 class="text-center text-dark mt-5">Your Prescription</h1>
+        <div class="py-5">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Doctor Name</th>
+                        <th>Appointment Date</th>
+                        <th>Appointment Time</th>
+                        <th>Allergies</th>
+                        <th>Diseases</th>
+                        <th>Medication</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment in appointments[::-1] %}
+                    <tr>
+                        <td>{{ appointment.doctor_name }}</td>
+                        <td>{{ appointment.appointment_date }}</td>
+                        <td>{{ appointment.appointment_time }}</td>
+                        <td>{{ appointment.allergies }}</td>
+                        <td>{{ appointment.diseases }}</td>
+                        <td>{{ appointment.medicine }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <div class="container mt-5">
-        <div class="card-body">
-            <div class="row justify-content-center column-gap-5">
-                <div class="col-lg-4 pb-4 align-items-center card text-center">
-                    <img src="4312784.jpg" alt="" width="400px">
-                    <h2 style="color: black;" class="card-title">Check Your Appointments</h2>
-                    <p style="color: black;font-weight: 20px;" class="card-text">Stay updated on your upcoming appointments.</p>
-                    <a href="patient-appointment-list"><button style="width: 180px;" type="button" class="btn btn-outline-dark btn-rounded">View
-                        Appointments</button></a>
-                </div>
-                <div class="col-lg-4 pb-4 align-items-center card text-center">
-                    <img src="5703042.jpg" alt="" width="400px">
-                    <h2 style="color: black;" class="card-title">Check Your Prescriptions</h2>
-                    <p style="color: black;font-weight: 20px;" class="card-text">Access your prescribed medications and instructions.</p>
-                    <a href="patient-prescription-list"><button style="width: 180px;" type="button" class="btn btn-outline-dark btn-rounded"
-                        data-mdb-ripple-init data-mdb-ripple-color="dark">View Prescriptions</button>
-             </a>
-                       </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="aboutus" class="container mt-5 mb-5 text-center">
-        <div class="py-4 px-5">
-            <h2 style="font-weight: bolder;color: black;">About us</h2>
-            <p style="font-weight: 50px;font-size: 20px;color: black;" class="card-text py-4 px-5">QuickHealth is a cutting-edge
-                hospital management system designed to revolutionize the healthcare experience.
-                We
-                are dedicated to providing advanced technology solutions to healthcare providers, ensuring efficient
-                management of hospitals, clinics, and medical facilities.</p>
-        </div>
-
-        <div class="row justify-content-center column-gap-5">
-            <div class="text-center align-items-center py-4 px-4 card col-lg-3">
-                <h4 style="font-weight: bolder;color: black;" class="mb-4">What We Offer</h4>
-                <p style="color: black;font-weight: 20px;">Care+ offers a comprehensive suite of features designed to optimize hospital management and patient
-                    care.
-                    Our
-                    platform includes:</p>
-                <ul style="color: black;font-weight: 20px;">
-                    <li>Appointment Scheduling</li>
-                    <li>Patient Management</li>
-                    <li>Health Records (EHR)</li>
-                    <li>And much more...</li>
-                </ul>
-            </div>
-            <div class="text-center align-items-center py-4 px-4 card col-lg-3">
-                <h4 style="font-weight: bolder;color: black;" class="mb-4">Our Mission</h4>
-                <p style="color: black;font-weight: 20px;">At Care+, our mission is to enhance the quality and accessibility of healthcare services through
-                    innovative
-                    software solutions. We aim to streamline hospital operations, improve patient care, and empower
-                    healthcare
-                    professionals with the tools they need to succeed.</p>
-            </div>
-            <div class="text-center align-items-center py-4 px-4 card col-lg-3">
-                <h4 style="font-weight: bolder;color: black;" class="mb-4">Why Choose Care+</h4>
-                <p style="color: black;font-weight: 20px;">Choosing Care+ means choosing reliability, efficiency, and innovation. Our user-friendly interface,
-                    robust
-                    features, and dedicated support team make us the preferred choice for healthcare providers worldwide.
-                    With
-                    Care+, you can focus on what matters most - delivering exceptional care to your patients.</p>
-            </div>
-        </div>
-
-    </div>
-
 
     <footer style="background-color: rgb(117,213,202)" class="text-center text-lg-start text-muted pt-3">
 

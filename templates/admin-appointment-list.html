@@ -45,6 +45,8 @@
                             <th>Appointment Time</th>
                             <th>Patient name</th>
                             <th>Patient email</th>
+                            <th>Status</th>
+
                         </tr>
                     </thead>
 <tbody>
@@ -56,6 +58,8 @@
         <td>{{ appointment.appointment_time }}</td>
         <td>{{ appointment.patient_name }}</td>
         <td>{{ appointment.patient_email }}</td>
+        <td>{{ appointment.status }}</td>
+
     </tr>
     {% endfor %}
 </tbody>
